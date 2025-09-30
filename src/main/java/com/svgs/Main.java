@@ -52,11 +52,48 @@ public class Main {
             if(result.getString("role").equals("admin")){
                 adminMenu();
             }else{
-                userMenu();
+                userMenu(username);
             }
 
         }catch(SQLException e){
+            System.out.println(e);
+        }
+    }
 
+    public static void adminMenu(){
+        Scanner input = new Scanner(System.in);
+        System.out.println("Which user would you like to delete?");
+        String response = input.nextLine();
+        String query = "DELETE FROM users WHERE username='" + response + "'";
+        try{
+            Statement state = conn.createStatement();
+            int numDeleted = state.executeUpdate(query);
+            if(numDeleted==0){
+                System.out.println("No user with that username.");
+            }
+            adminMenu();
+        }catch(SQLException e){
+            System.out.println(e.getErrorCode());
+        }
+        }
+
+    public static void userMenu(String username){
+        Scanner input = new Scanner(System.in);
+        System.out.println("Change your password (y/n)?");
+        String response = input.nextLine();
+        if(response.toLowerCase().equals("y")){
+            System.out.println("New password? ");
+            String newPassword = input.nextLine();
+            String query = "UPDATE users SET password='" + newPassword + "' WHERE username='" + username + "'";
+            try{
+                Statement state = conn.createStatement();
+                state.executeUpdate(query);
+                mainMenu();
+            } catch (SQLException e){
+                System.out.println(e);
+            }
+        }else {
+            mainMenu();
         }
     }
 
